@@ -7,19 +7,8 @@ import {
   Certificate,
   HandHeart,
   Crown,
-  Star,
   Rocket,
-  Lightning,
-  Shield,
-  Heart,
-  Target,
-  UserCircle,
   Eye,
-  Plus,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Funnel,
   SortAscending,
   SortDescending,
 } from '@phosphor-icons/react';
@@ -62,15 +51,6 @@ const badgeConfig = {
     criteria: 'Hold executive position or significant industry influence',
     tier: 'platinum',
   },
-  community_champion: {
-    name: 'Community Champion',
-    color: '#EC4899',
-    bgColor: '#FCE7F3',
-    icon: Star,
-    description: 'Active contributor to HSI alumni community',
-    criteria: 'Organize events, participate in programs, volunteer for company initiatives',
-    tier: 'gold',
-  },
   innovator: {
     name: 'Innovator',
     color: '#F97316',
@@ -79,24 +59,6 @@ const badgeConfig = {
     description: 'Pioneer in innovation and entrepreneurship',
     criteria: 'Launch startup, patent, or innovative project after leaving HSI',
     tier: 'platinum',
-  },
-  rising_star: {
-    name: 'Rising Star',
-    color: '#06B6D4',
-    bgColor: '#ECFEFF',
-    icon: Lightning,
-    description: 'Promising early career professional',
-    criteria: 'Exceptional achievements within 3 years of leaving HSI',
-    tier: 'silver',
-  },
-  philanthropy: {
-    name: 'Philanthropist',
-    color: '#EF4444',
-    bgColor: '#FEE2E2',
-    icon: Heart,
-    description: 'Dedicated to giving back to society',
-    criteria: 'Active in charitable causes and social initiatives',
-    tier: 'gold',
   },
 };
 
@@ -111,12 +73,12 @@ const tierConfig = {
 const mockBadgeHolders = [
   { id: 1, name: 'Maria Santos', email: 'maria.santos@email.com', alumniType: 'Former Employee', hsiRole: 'Web Developer', hsiTenure: '2018-2022', badges: ['certified', 'mentor', 'top_performer'], totalPoints: 850 },
   { id: 2, name: 'John Dela Cruz', email: 'john.delacruz@email.com', alumniType: 'Former Employee', hsiRole: 'Project Manager', hsiTenure: '2015-2019', badges: ['certified', 'industry_leader', 'innovator'], totalPoints: 1200 },
-  { id: 3, name: 'Ana Reyes', email: 'ana.reyes@email.com', alumniType: 'Former Intern', hsiRole: 'QA / Web Dev', hsiTenure: '2019-2021', badges: ['certified', 'community_champion', 'mentor'], totalPoints: 720 },
-  { id: 4, name: 'Carlos Garcia', email: 'carlos.garcia@email.com', alumniType: 'Former Employee', hsiRole: 'Game Developer', hsiTenure: '2019-2023', badges: ['certified', 'rising_star'], totalPoints: 450 },
-  { id: 5, name: 'Patricia Lim', email: 'patricia.lim@email.com', alumniType: 'Former Employee', hsiRole: 'HR', hsiTenure: '2016-2021', badges: ['certified', 'top_performer', 'philanthropy'], totalPoints: 980 },
-  { id: 6, name: 'Miguel Torres', email: 'miguel.torres@email.com', alumniType: 'Former Intern', hsiRole: 'GFX / Game Dev', hsiTenure: '2020-2021', badges: ['certified', 'mentor', 'community_champion'], totalPoints: 670 },
+  { id: 3, name: 'Ana Reyes', email: 'ana.reyes@email.com', alumniType: 'Former Intern', hsiRole: 'QA / Web Dev', hsiTenure: '2019-2021', badges: ['certified', 'mentor'], totalPoints: 720 },
+  { id: 4, name: 'Carlos Garcia', email: 'carlos.garcia@email.com', alumniType: 'Former Employee', hsiRole: 'Game Developer', hsiTenure: '2019-2023', badges: ['certified', 'top_performer'], totalPoints: 450 },
+  { id: 5, name: 'Patricia Lim', email: 'patricia.lim@email.com', alumniType: 'Former Employee', hsiRole: 'HR', hsiTenure: '2016-2021', badges: ['certified', 'top_performer'], totalPoints: 980 },
+  { id: 6, name: 'Miguel Torres', email: 'miguel.torres@email.com', alumniType: 'Former Intern', hsiRole: 'GFX / Game Dev', hsiTenure: '2020-2021', badges: ['certified', 'mentor'], totalPoints: 670 },
   { id: 7, name: 'Sofia Chen', email: 'sofia.chen@email.com', alumniType: 'Former Employee', hsiRole: 'Unleash Web Dev', hsiTenure: '2017-2022', badges: ['certified', 'innovator', 'industry_leader'], totalPoints: 1100 },
-  { id: 8, name: 'David Kim', email: 'david.kim@email.com', alumniType: 'Former Intern', hsiRole: 'Sys Admin / QA', hsiTenure: '2021-2022', badges: ['certified', 'rising_star', 'top_performer'], totalPoints: 580 },
+  { id: 8, name: 'David Kim', email: 'david.kim@email.com', alumniType: 'Former Intern', hsiRole: 'Sys Admin / QA', hsiTenure: '2021-2022', badges: ['certified', 'top_performer'], totalPoints: 580 },
 ];
 
 const ITEMS_PER_PAGE = 6;
