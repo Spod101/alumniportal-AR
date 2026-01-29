@@ -2,182 +2,217 @@
 import React, { useState } from 'react';
 import {
   Heart,
-  HandsClapping,
-  ChatCircle,
-  ShareNetwork,
   Buildings,
   CalendarBlank,
-  DotsThree,
   Plus,
   MagnifyingGlass,
-  Funnel,
-  Star,
   Trophy,
-  Medal,
   Sparkle,
-  Eye,
-  PencilSimple,
-  Trash,
-  BookmarkSimple,
+  X,
+  TrendUp,
+  Crown,
+  Star,
+  Code,
+  Target,
+  Users,
+  Certificate,
+  Briefcase,
+  GraduationCap,
+  Rocket,
+  Image,
+  Confetti,
+  FunnelSimple,
+  CaretDown,
+  Check,
 } from '@phosphor-icons/react';
+
+// Recognition types with icons and colors
+const recognitionTypes = {
+  'Promotion': { 
+    icon: TrendUp, 
+    color: '#199A08', 
+    bgColor: '#E8F5E9',
+  },
+  'Leadership Award': { 
+    icon: Crown, 
+    color: '#9333EA', 
+    bgColor: '#F3E8FF',
+  },
+  'Developer of the Year': { 
+    icon: Code, 
+    color: '#3B82F6', 
+    bgColor: '#E3F2FD',
+  },
+  'Technical Excellence': { 
+    icon: Star, 
+    color: '#F97316', 
+    bgColor: '#FFF7ED',
+  },
+  'Project Completion': { 
+    icon: Target, 
+    color: '#06B6D4', 
+    bgColor: '#ECFEFF',
+  },
+  'Team Player Award': { 
+    icon: Users, 
+    color: '#EC4899', 
+    bgColor: '#FCE7F3',
+  },
+  'Innovation Award': { 
+    icon: Rocket, 
+    color: '#EF4444', 
+    bgColor: '#FEE2E2',
+  },
+  'Employee of the Month': { 
+    icon: Trophy, 
+    color: '#DAB619', 
+    bgColor: '#FFF8E1',
+  },
+  'Certification Achievement': { 
+    icon: Certificate, 
+    color: '#14B8A6', 
+    bgColor: '#CCFBF1',
+  },
+};
 
 // Mock data for appreciation posts
 const mockPosts = [
   {
     id: 1,
     company: 'Google Philippines',
-    companyLogo: null,
-    title: 'Outstanding Contribution to AI Development',
+    title: 'Promoted to Senior Software Engineer',
     honoree: 'Maria Elena Santos',
     hsiRole: 'Web Developer',
-    hsiTenure: '2018-2022',
+    hsiTenure: '2020-2024',
     currentRole: 'Senior Software Engineer',
-    alumniType: 'Former Employee',
-    content: 'We are proud to recognize Maria Elena Santos for her exceptional work in developing AI-powered accessibility features that have helped millions of users worldwide. Her innovative approach and dedication to inclusive technology exemplify the values we cherish at Google.',
-    category: 'Innovation',
-    postedDate: '2026-01-20',
-    reactions: { hearts: 234, claps: 156, stars: 89 },
-    comments: 45,
-    shares: 23,
+    alumniType: 'Employee',
+    content: 'We are thrilled to announce that Maria Elena Santos has been promoted to Senior Software Engineer! Maria has consistently demonstrated exceptional technical skills and leadership in developing AI-powered accessibility features that have helped millions of users worldwide.',
+    recognitionType: 'Promotion',
+    postedDate: '2026-01-25',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
     featured: true,
   },
   {
     id: 2,
     company: 'Ubisoft Philippines',
-    companyLogo: null,
     title: 'QA Team Lead of the Year 2025',
     honoree: 'Ana Marie Reyes',
     hsiRole: 'QA / Web Dev',
-    hsiTenure: '2019-2021',
+    hsiTenure: '2021-2023',
     currentRole: 'QA Lead',
-    alumniType: 'Former Intern',
-    content: 'Ana has been instrumental in scaling our QA processes and leading a team of 30 testers. Her attention to detail and quality standards learned at HSI have been invaluable to our game development pipeline.',
-    category: 'Leadership',
-    postedDate: '2026-01-15',
-    reactions: { hearts: 189, claps: 201, stars: 67 },
-    comments: 38,
-    shares: 19,
+    alumniType: 'Intern',
+    content: 'Ana Marie Reyes has been recognized as QA Team Lead of the Year for her outstanding leadership in managing a team of 30 testers. Her attention to detail and quality standards developed at HSI continue to drive excellence in our game development pipeline.',
+    recognitionType: 'Leadership Award',
+    postedDate: '2026-01-20',
+    image: null,
     featured: true,
   },
   {
     id: 3,
     company: 'Gameloft Manila',
-    companyLogo: null,
-    title: 'Best Game Developer Award',
+    title: 'Developer of the Year 2025',
     honoree: 'Carlos Garcia',
     hsiRole: 'Game Developer',
-    hsiTenure: '2019-2023',
+    hsiTenure: '2019-2022',
     currentRole: 'Senior Game Developer',
-    alumniType: 'Former Employee',
-    content: 'Carlos designed and implemented core gameplay mechanics for our top-grossing mobile game. His game development skills honed at HSI continue to set new standards for excellence in our studio.',
-    category: 'Technical Excellence',
-    postedDate: '2026-01-10',
-    reactions: { hearts: 145, claps: 178, stars: 56 },
-    comments: 29,
-    shares: 15,
+    alumniType: 'Employee',
+    content: 'Carlos Garcia has been awarded Developer of the Year for his exceptional contributions to our flagship mobile game. His innovative gameplay mechanics have significantly enhanced user engagement and helped achieve over 10 million downloads.',
+    recognitionType: 'Developer of the Year',
+    postedDate: '2026-01-15',
+    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop',
     featured: false,
   },
   {
     id: 4,
     company: 'Accenture Philippines',
-    companyLogo: null,
-    title: 'Community Impact Recognition',
+    title: 'Technical Excellence Award Q4 2025',
     honoree: 'Patricia Lim',
-    hsiRole: 'HR',
-    hsiTenure: '2016-2021',
-    currentRole: 'HR Business Partner',
-    alumniType: 'Former Employee',
-    content: 'Patricia\'s initiative to mentor underrepresented groups in tech has positively impacted over 500 aspiring professionals. Her dedication to diversity and inclusion makes her a true ambassador of our values.',
-    category: 'Community Impact',
-    postedDate: '2026-01-05',
-    reactions: { hearts: 312, claps: 245, stars: 123 },
-    comments: 67,
-    shares: 45,
+    hsiRole: 'Web Developer',
+    hsiTenure: '2018-2021',
+    currentRole: 'Solutions Architect',
+    alumniType: 'Employee',
+    content: 'Patricia Lim receives the Technical Excellence Award for designing and implementing a scalable microservices architecture that reduced system latency by 60%. Her technical expertise continues to set benchmarks for excellence.',
+    recognitionType: 'Technical Excellence',
+    postedDate: '2026-01-10',
+    image: null,
     featured: true,
   },
   {
     id: 5,
     company: 'Globe Telecom',
-    companyLogo: null,
-    title: 'System Administrator Excellence Award Q4 2025',
+    title: 'Network Migration Project Completion',
     honoree: 'David Kim',
     hsiRole: 'Sys Admin / QA',
-    hsiTenure: '2021-2022',
+    hsiTenure: '2022-2024',
     currentRole: 'IT Infrastructure Specialist',
-    alumniType: 'Former Intern',
-    content: 'David\'s exceptional server management and network optimization skills led to 99.99% uptime for our critical systems. His technical foundation from HSI has been outstanding.',
-    category: 'Project Excellence',
-    postedDate: '2025-12-28',
-    reactions: { hearts: 98, claps: 134, stars: 45 },
-    comments: 22,
-    shares: 11,
+    alumniType: 'Intern',
+    content: 'David Kim successfully led the completion of our nationwide 5G network migration project ahead of schedule. His meticulous planning and execution ensured zero downtime during the transition.',
+    recognitionType: 'Project Completion',
+    postedDate: '2026-01-05',
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=400&fit=crop',
     featured: false,
+  },
+  {
+    id: 6,
+    company: 'Canva',
+    title: 'Innovation Award - AI Design Tools',
+    honoree: 'Sofia Chen',
+    hsiRole: 'Unleash Web Dev',
+    hsiTenure: '2020-2024',
+    currentRole: 'Tech Lead',
+    alumniType: 'Employee',
+    content: 'Sofia Chen has been recognized with the Innovation Award for pioneering AI-powered design automation tools that have transformed how millions of users create content.',
+    recognitionType: 'Innovation Award',
+    postedDate: '2025-12-28',
+    image: null,
+    featured: true,
   },
 ];
 
-const categories = [
-  'All',
-  'Innovation',
-  'Leadership',
-  'Technical Excellence',
-  'Community Impact',
-  'Project Excellence',
-];
-
-const categoryColors = {
-  Innovation: { color: '#F97316', bgColor: '#FFF7ED' },
-  Leadership: { color: '#9333EA', bgColor: '#F3E8FF' },
-  'Technical Excellence': { color: '#3B82F6', bgColor: '#E3F2FD' },
-  'Community Impact': { color: '#EC4899', bgColor: '#FCE7F3' },
-  'Project Excellence': { color: '#199A08', bgColor: '#E8F5E9' },
-};
 
 function CompanyAppreciationPosts({ isCompact = false }) {
-  const [posts, setPosts] = useState(mockPosts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategories, setSelectedCategories] = useState([]); // Empty array = All
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [userReactions, setUserReactions] = useState({});
-  const [savedPosts, setSavedPosts] = useState({});
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
-  const filteredPosts = posts.filter((post) => {
+  // Toggle category selection
+  const toggleCategory = (category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((c) => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedCategories([]);
+  };
+
+
+  const filteredPosts = mockPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.honoree.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.company.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(post.recognitionType);
     return matchesSearch && matchesCategory;
   });
 
-  const toggleReaction = (postId, reactionType) => {
-    setUserReactions((prev) => {
-      const postReactions = prev[postId] || {};
-      return {
-        ...prev,
-        [postId]: {
-          ...postReactions,
-          [reactionType]: !postReactions[reactionType],
-        },
-      };
-    });
-  };
-
-  const toggleSave = (postId) => {
-    setSavedPosts((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  };
-
+  // Compact view for overview
   if (isCompact) {
-    const featuredPosts = posts.filter((p) => p.featured).slice(0, 3);
+    const featuredPosts = mockPosts.filter((p) => p.featured).slice(0, 3);
 
     return (
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Heart size={20} className="text-[#EC4899]" weight="duotone" />
-            <h3 className="font-semibold text-gray-900">Company Appreciation Posts</h3>
+            <h3 className="font-semibold text-gray-900">Appreciation Posts</h3>
           </div>
           <span className="text-sm text-[#DAB619] font-medium cursor-pointer hover:underline">
             View All
@@ -185,45 +220,39 @@ function CompanyAppreciationPosts({ isCompact = false }) {
         </div>
 
         <div className="divide-y divide-gray-100">
-          {featuredPosts.map((post) => (
-            <div key={post.id} className="p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#DAB619] to-[#c4a015] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                  {post.company.split(' ').map((w) => w[0]).join('').slice(0, 2)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-gray-900 text-sm truncate">{post.title}</h4>
-                    {post.featured && (
-                      <Sparkle size={14} className="text-[#DAB619] flex-shrink-0" weight="fill" />
-                    )}
+          {featuredPosts.map((post) => {
+            const typeConfig = recognitionTypes[post.recognitionType];
+            const TypeIcon = typeConfig?.icon || Trophy;
+            return (
+              <div key={post.id} className="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: typeConfig?.bgColor }}
+                  >
+                    <TypeIcon size={20} style={{ color: typeConfig?.color }} weight="duotone" />
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {post.honoree} • {post.company}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                    <span className="flex items-center gap-1">
-                      <Heart size={12} weight="duotone" className="text-red-400" />
-                      {post.reactions.hearts}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <ChatCircle size={12} />
-                      {post.comments}
-                    </span>
-                    <span
-                      className="px-1.5 py-0.5 rounded text-[10px] font-medium"
-                      style={{
-                        color: categoryColors[post.category]?.color,
-                        backgroundColor: categoryColors[post.category]?.bgColor,
-                      }}
-                    >
-                      {post.category}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-gray-900 text-sm truncate">{post.title}</h4>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {post.honoree} • {post.company}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span
+                        className="px-2 py-0.5 rounded text-[10px] font-medium"
+                        style={{
+                          color: typeConfig?.color,
+                          backgroundColor: typeConfig?.bgColor,
+                        }}
+                      >
+                        {post.recognitionType}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
@@ -240,7 +269,7 @@ function CompanyAppreciationPosts({ isCompact = false }) {
               Company Appreciation Posts
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              Celebrate former employee and intern achievements recognized by their current employers
+              Celebrating alumni achievements recognized by their current employers
             </p>
           </div>
 
@@ -267,160 +296,325 @@ function CompanyAppreciationPosts({ isCompact = false }) {
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {categories.map((category) => (
+      {/* Filter & Results Info */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          {/* Filter Button */}
           <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-              selectedCategory === category
+            onClick={() => setShowFilterDropdown(true)}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              selectedCategories.length > 0
                 ? 'bg-[#DAB619] text-white shadow-md'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+                : 'bg-white text-gray-700 shadow-sm hover:shadow-md'
             }`}
           >
-            {category}
+            <FunnelSimple size={18} />
+            <span>
+              {selectedCategories.length === 0
+                ? 'Filter by Type'
+                : `${selectedCategories.length} Selected`}
+            </span>
           </button>
-        ))}
+
+          {/* Results Count */}
+          <p className="text-sm text-gray-500">
+            <span className="font-semibold text-gray-900">{filteredPosts.length}</span> posts
+          </p>
+        </div>
+
+        {/* Selected Categories Pills */}
+        {selectedCategories.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {selectedCategories.map((category) => {
+              const config = recognitionTypes[category];
+              const Icon = config?.icon;
+              return (
+                <span
+                  key={category}
+                  className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 rounded-full text-xs font-medium"
+                  style={{
+                    backgroundColor: config?.bgColor,
+                    color: config?.color,
+                  }}
+                >
+                  {Icon && <Icon size={14} weight="bold" />}
+                  {category}
+                  <button
+                    onClick={() => toggleCategory(category)}
+                    className="p-0.5 rounded-full hover:bg-black/10 transition-colors ml-1"
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              );
+            })}
+            <button
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X size={12} />
+              Clear all
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Filter Modal */}
+      {showFilterDropdown && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowFilterDropdown(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          >
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-gradient-to-r from-[#DAB619]/10 to-[#DAB619]/5 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#DAB619] flex items-center justify-center">
+                    <FunnelSimple size={20} className="text-white" weight="bold" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Filter by Recognition Type</h3>
+                    <p className="text-sm text-gray-500">Select one or more categories</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowFilterDropdown(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X size={20} className="text-gray-500" />
+                </button>
+              </div>
+            </div>
+
+            {/* Category Grid */}
+            <div className="p-6">
+              <div className="grid grid-cols-3 gap-3">
+                {Object.entries(recognitionTypes).map(([type, config]) => {
+                  const Icon = config.icon;
+                  const isSelected = selectedCategories.includes(type);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => toggleCategory(type)}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-xl text-center transition-all ${
+                        isSelected
+                          ? 'ring-2 ring-[#DAB619] bg-[#DAB619]/10 shadow-md'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      {/* Icon with checkbox indicator */}
+                      <div className="relative">
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
+                          style={{ backgroundColor: config.bgColor }}
+                        >
+                          <Icon size={24} style={{ color: config.color }} weight="duotone" />
+                        </div>
+                        {isSelected && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#DAB619] rounded-full flex items-center justify-center shadow-sm">
+                            <Check size={12} className="text-white" weight="bold" />
+                          </div>
+                        )}
+                      </div>
+                      <span className={`text-sm font-medium ${isSelected ? 'text-[#DAB619]' : 'text-gray-700'}`}>
+                        {type}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {selectedCategories.length > 0 ? (
+                  <>
+                    <span className="text-sm text-gray-600">
+                      <span className="font-semibold text-[#DAB619]">{selectedCategories.length}</span> type{selectedCategories.length > 1 ? 's' : ''} selected
+                    </span>
+                    <button
+                      onClick={clearFilters}
+                      className="text-sm text-gray-500 hover:text-gray-700 underline"
+                    >
+                      Clear all
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-500">Showing all types</span>
+                )}
+              </div>
+              <button
+                onClick={() => setShowFilterDropdown(false)}
+                className="px-6 py-2.5 bg-[#DAB619] text-white font-medium rounded-xl hover:bg-[#c4a015] transition-colors shadow-md"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Posts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredPosts.map((post) => {
-          const postReactions = userReactions[post.id] || {};
-          const isSaved = savedPosts[post.id];
+          const typeConfig = recognitionTypes[post.recognitionType];
+          const TypeIcon = typeConfig?.icon || Trophy;
 
           return (
             <div
               key={post.id}
-              className={`bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all ${
+              onClick={() => setSelectedPost(post)}
+              className={`group bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all cursor-pointer ${
                 post.featured ? 'ring-2 ring-[#DAB619]/30' : ''
               }`}
             >
-              {/* Post Header */}
-              <div className="p-5 border-b border-gray-100">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#DAB619] to-[#c4a015] flex items-center justify-center text-white font-bold">
-                      {post.company.split(' ').map((w) => w[0]).join('').slice(0, 2)}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-gray-900">{post.company}</h4>
-                        {post.featured && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 bg-[#DAB619]/10 text-[#DAB619] text-xs font-medium rounded-full">
-                            <Sparkle size={12} weight="fill" />
-                            Featured
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5">
-                        <CalendarBlank size={14} />
-                        {new Date(post.postedDate).toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </div>
-                    </div>
+              {/* Image Section (if available) */}
+              {post.image && (
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  
+                  {/* Recognition Badge on Image */}
+                  <div className="absolute top-4 left-4">
+                    <span
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm"
+                      style={{
+                        color: 'white',
+                        backgroundColor: `${typeConfig?.color}CC`,
+                      }}
+                    >
+                      <TypeIcon size={14} weight="bold" />
+                      {post.recognitionType}
+                    </span>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => toggleSave(post.id)}
-                      className={`p-2 rounded-lg transition-colors ${
-                        isSaved ? 'text-[#DAB619] bg-[#DAB619]/10' : 'text-gray-400 hover:bg-gray-100'
-                      }`}
-                    >
-                      <BookmarkSimple size={20} weight={isSaved ? 'fill' : 'regular'} />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">
-                      <DotsThree size={20} weight="bold" />
-                    </button>
+                  {post.featured && (
+                    <div className="absolute top-4 right-4">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#DAB619] text-white text-xs font-medium rounded-full">
+                        <Sparkle size={12} weight="fill" />
+                        Featured
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Company Badge on Image */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-lg bg-white/90 backdrop-blur-sm flex items-center justify-center text-xs font-bold text-gray-800 shadow-sm">
+                        {post.company.split(' ').map((w) => w[0]).join('').slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold text-sm drop-shadow-md">{post.company}</p>
+                        <p className="text-white/80 text-xs drop-shadow-md">
+                          {new Date(post.postedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Post Content */}
+              {/* Content Section */}
               <div className="p-5">
-                {/* Category Badge */}
-                <span
-                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium mb-3"
-                  style={{
-                    color: categoryColors[post.category]?.color,
-                    backgroundColor: categoryColors[post.category]?.bgColor,
-                  }}
-                >
-                  <Trophy size={12} weight="duotone" />
-                  {post.category}
-                </span>
-
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
-
-                {/* Honoree Info */}
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#1E40AF] flex items-center justify-center text-white text-sm font-bold">
-                    {post.honoree.split(' ').map((n) => n[0]).join('')}
+                {/* No Image Header */}
+                {!post.image && (
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
+                        style={{ backgroundColor: typeConfig?.bgColor }}
+                      >
+                        <TypeIcon size={24} style={{ color: typeConfig?.color }} weight="duotone" />
+                      </div>
+                      <div>
+                        <span
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                          style={{
+                            color: typeConfig?.color,
+                            backgroundColor: typeConfig?.bgColor,
+                          }}
+                        >
+                          {post.recognitionType}
+                        </span>
+                        <p className="text-xs text-gray-500 mt-1">{post.company}</p>
+                      </div>
+                    </div>
+                    {post.featured && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#DAB619]/10 text-[#DAB619] text-xs font-medium rounded-full">
+                        <Sparkle size={10} weight="fill" />
+                        Featured
+                      </span>
+                    )}
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{post.honoree}</p>
-                    <p className="text-xs text-gray-500">
-                      {post.hsiRole} ({post.hsiTenure})
-                    </p>
+                )}
+
+                {/* Title */}
+                <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#DAB619] transition-colors mb-3">
+                  {post.title}
+                </h3>
+
+                {/* Honoree Card */}
+                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl mb-4">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-md ${
+                      post.alumniType === 'Employee'
+                        ? 'bg-gradient-to-br from-[#3B82F6] to-[#1D4ED8]'
+                        : 'bg-gradient-to-br from-[#9333EA] to-[#7C3AED]'
+                    }`}
+                  >
+                    {post.honoree.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                   </div>
-                </div>
-
-                <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{post.content}</p>
-
-                <button className="text-sm text-[#DAB619] font-medium mt-2 hover:underline">
-                  Read more
-                </button>
-              </div>
-
-              {/* Reactions Bar */}
-              <div className="px-5 py-3 border-t border-gray-100 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => toggleReaction(post.id, 'hearts')}
-                      className={`flex items-center gap-1.5 text-sm transition-colors ${
-                        postReactions.hearts ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
-                      }`}
-                    >
-                      <Heart size={18} weight={postReactions.hearts ? 'fill' : 'regular'} />
-                      {post.reactions.hearts + (postReactions.hearts ? 1 : 0)}
-                    </button>
-                    <button
-                      onClick={() => toggleReaction(post.id, 'claps')}
-                      className={`flex items-center gap-1.5 text-sm transition-colors ${
-                        postReactions.claps ? 'text-yellow-500' : 'text-gray-500 hover:text-yellow-500'
-                      }`}
-                    >
-                      <HandsClapping size={18} weight={postReactions.claps ? 'fill' : 'regular'} />
-                      {post.reactions.claps + (postReactions.claps ? 1 : 0)}
-                    </button>
-                    <button
-                      onClick={() => toggleReaction(post.id, 'stars')}
-                      className={`flex items-center gap-1.5 text-sm transition-colors ${
-                        postReactions.stars ? 'text-[#DAB619]' : 'text-gray-500 hover:text-[#DAB619]'
-                      }`}
-                    >
-                      <Star size={18} weight={postReactions.stars ? 'fill' : 'regular'} />
-                      {post.reactions.stars + (postReactions.stars ? 1 : 0)}
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <button className="flex items-center gap-1.5 hover:text-[#DAB619] transition-colors">
-                      <ChatCircle size={18} />
-                      {post.comments}
-                    </button>
-                    <button className="flex items-center gap-1.5 hover:text-[#DAB619] transition-colors">
-                      <ShareNetwork size={18} />
-                      {post.shares}
-                    </button>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-gray-900">{post.honoree}</h4>
+                      <span
+                        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                          post.alumniType === 'Employee'
+                            ? 'bg-[#3B82F6]/10 text-[#3B82F6]'
+                            : 'bg-[#9333EA]/10 text-[#9333EA]'
+                        }`}
+                      >
+                        {post.alumniType === 'Employee' ? <Briefcase size={8} /> : <GraduationCap size={8} />}
+                        {post.alumniType}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500">{post.currentRole}</p>
+                    <p className="text-[10px] text-gray-400">HSI {post.hsiRole} ({post.hsiTenure})</p>
                   </div>
                 </div>
+
+                {/* Content Preview */}
+                <p className="text-sm text-gray-600 leading-relaxed line-clamp-2 mb-3">
+                  {post.content}
+                </p>
+
+                {/* Footer */}
+                {!post.image && (
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                      <CalendarBlank size={14} />
+                      {new Date(post.postedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    <span className="text-xs text-[#DAB619] font-medium group-hover:underline">
+                      Read more →
+                    </span>
+                  </div>
+                )}
+
+                {post.image && (
+                  <span className="text-xs text-[#DAB619] font-medium group-hover:underline">
+                    Read more →
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -435,18 +629,184 @@ function CompanyAppreciationPosts({ isCompact = false }) {
         </div>
       )}
 
+      {/* View Post Modal */}
+      {selectedPost && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            {/* Modal Image */}
+            {selectedPost.image && (
+              <div className="relative h-56">
+                <img
+                  src={selectedPost.image}
+                  alt={selectedPost.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <button
+                  onClick={() => setSelectedPost(null)}
+                  className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+                
+                {/* Recognition Badge */}
+                <div className="absolute bottom-4 left-4">
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold"
+                    style={{
+                      color: 'white',
+                      backgroundColor: `${recognitionTypes[selectedPost.recognitionType]?.color}`,
+                    }}
+                  >
+                    {(() => {
+                      const Icon = recognitionTypes[selectedPost.recognitionType]?.icon || Trophy;
+                      return <Icon size={16} weight="bold" />;
+                    })()}
+                    {selectedPost.recognitionType}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Header (no image) */}
+            {!selectedPost.image && (
+              <div
+                className="relative px-6 py-5"
+                style={{ backgroundColor: recognitionTypes[selectedPost.recognitionType]?.bgColor }}
+              >
+                <button
+                  onClick={() => setSelectedPost(null)}
+                  className="absolute top-4 right-4 p-2 hover:bg-white/50 rounded-full transition-colors"
+                >
+                  <X size={20} className="text-gray-600" />
+                </button>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center bg-white shadow-sm"
+                  >
+                    {(() => {
+                      const Icon = recognitionTypes[selectedPost.recognitionType]?.icon || Trophy;
+                      return <Icon size={28} style={{ color: recognitionTypes[selectedPost.recognitionType]?.color }} weight="duotone" />;
+                    })()}
+                  </div>
+                  <div>
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white"
+                      style={{ color: recognitionTypes[selectedPost.recognitionType]?.color }}
+                    >
+                      {selectedPost.recognitionType}
+                    </span>
+                    <p className="text-sm text-gray-600 mt-1">{selectedPost.company}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-300px)]">
+              {/* Company Info (for image posts) */}
+              {selectedPost.image && (
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-700">
+                    {selectedPost.company.split(' ').map((w) => w[0]).join('').slice(0, 2)}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">{selectedPost.company}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(selectedPost.postedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedPost.title}</h2>
+              
+              {!selectedPost.image && (
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                  <CalendarBlank size={16} />
+                  {new Date(selectedPost.postedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
+              )}
+
+              {/* Honoree Card */}
+              <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl mb-6">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`w-16 h-16 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-lg ${
+                      selectedPost.alumniType === 'Employee'
+                        ? 'bg-gradient-to-br from-[#3B82F6] to-[#1D4ED8]'
+                        : 'bg-gradient-to-br from-[#9333EA] to-[#7C3AED]'
+                    }`}
+                  >
+                    {selectedPost.honoree.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Confetti size={18} className="text-[#DAB619]" weight="duotone" />
+                      <span className="text-xs text-[#DAB619] font-medium">Congratulations!</span>
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-900">{selectedPost.honoree}</h4>
+                    <p className="text-[#DAB619] font-medium">{selectedPost.currentRole}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          selectedPost.alumniType === 'Employee'
+                            ? 'bg-[#3B82F6]/10 text-[#3B82F6]'
+                            : 'bg-[#9333EA]/10 text-[#9333EA]'
+                        }`}
+                      >
+                        {selectedPost.alumniType === 'Employee' ? <Briefcase size={10} /> : <GraduationCap size={10} />}
+                        {selectedPost.alumniType} Alumni
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        HSI {selectedPost.hsiRole} ({selectedPost.hsiTenure})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Full Content */}
+              <p className="text-gray-700 leading-relaxed">{selectedPost.content}</p>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t">
+              <button
+                onClick={() => setSelectedPost(null)}
+                className="w-full py-2.5 text-sm font-medium text-white bg-[#DAB619] hover:bg-[#c4a015] rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Create Post Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-[#EC4899] to-[#DB2777] px-6 py-4">
+            <div className="bg-gradient-to-r from-[#DAB619] to-[#c4a015] px-6 py-4">
               <h3 className="text-lg font-semibold text-white">Create Appreciation Post</h3>
               <p className="text-white/80 text-sm mt-1">
-                Recognize an alumni's achievement
+                Celebrate an alumni's achievement
               </p>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Recognition Type <span className="text-red-500">*</span>
+                </label>
+                <select className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white">
+                  <option value="">Select recognition type</option>
+                  {Object.keys(recognitionTypes).map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Company Name <span className="text-red-500">*</span>
@@ -475,21 +835,9 @@ function CompanyAppreciationPosts({ isCompact = false }) {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g., Employee of the Month"
+                  placeholder="e.g., Promoted to Senior Engineer"
                   className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white">
-                  <option value="">Select category</option>
-                  {categories.slice(1).map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
               </div>
 
               <div>
@@ -498,9 +846,25 @@ function CompanyAppreciationPosts({ isCompact = false }) {
                 </label>
                 <textarea
                   rows={4}
-                  placeholder="Share the story of this achievement..."
+                  placeholder="Share the details of this achievement..."
                   className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Image <span className="text-gray-400">(Optional)</span>
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#DAB619] transition-colors cursor-pointer">
+                  <Image size={32} className="mx-auto text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-500">Click to upload an image</p>
+                  <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="featured" className="rounded border-gray-300 text-[#DAB619] focus:ring-[#DAB619]" />
+                <label htmlFor="featured" className="text-sm text-gray-700">Mark as featured post</label>
               </div>
             </div>
 
