@@ -6,12 +6,11 @@ import {
   Sparkle,
   TrendUp,
   Heart,
-  Book,
+  UsersThree,
 } from '@phosphor-icons/react';
 import FeaturedAlumni from '../components/achievements_recognition/FeaturedAlumni';
 import BadgeShowcase from '../components/achievements_recognition/BadgeShowcase';
 import CompanyAppreciationPosts from '../components/achievements_recognition/CompanyAppreciationPosts';
-import AlumniDirectory from '../components/achievements_recognition/AlumniDirectory';
 import AchievementTimeline from '../components/achievements_recognition/AchievementTimeline';
 
 const AchievementsAndRecognition = () => {
@@ -22,7 +21,7 @@ const AchievementsAndRecognition = () => {
     { label: 'Total Badges Awarded', value: '1,247', icon: Medal, color: '#DAB619', bgColor: '#FFF8E1' },
     { label: 'Featured Alumni', value: '48', icon: Crown, color: '#9333EA', bgColor: '#F3E8FF' },
     { label: 'Appreciation Posts', value: '156', icon: Heart, color: '#EC4899', bgColor: '#FCE7F3' },
-    { label: 'Total Alumni', value: '214', icon: Book, color: '#3B82F6', bgColor: '#E3F2FD' },
+    { label: 'Active Alumni', value: '214', icon: UsersThree, color: '#3B82F6', bgColor: '#E3F2FD' },
   ];
 
   const tabs = [
@@ -30,7 +29,6 @@ const AchievementsAndRecognition = () => {
     { id: 'badges', label: 'Alumni Badges', icon: Medal },
     { id: 'featured', label: 'Featured Alumni', icon: Crown },
     { id: 'appreciation', label: 'Appreciation Posts', icon: Heart },
-    { id: 'alumni-directory', label: 'Alumni Directory', icon: Book },
   ];
 
   const renderContent = () => {
@@ -41,8 +39,6 @@ const AchievementsAndRecognition = () => {
         return <FeaturedAlumni />;
       case 'appreciation':
         return <CompanyAppreciationPosts />;
-      case 'alumni-directory':
-        return <AlumniDirectory />;
       default:
         return (
           <div className="space-y-8">
