@@ -1,5 +1,6 @@
 // src/components/achievements_recognition/CompanyAppreciationPosts.jsx
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Heart,
   Buildings,
@@ -170,12 +171,143 @@ const mockPosts = [
 ];
 
 
+// Initial form state
+const initialFormState = {
+  recognitionType: '',
+  company: '',
+  honoree: '',
+  alumniType: '',
+  currentRole: '',
+  hsiRole: '',
+  hsiTenureStart: '',
+  hsiTenureEnd: '',
+  title: '',
+  content: '',
+  imageUrl: '',
+};
+
 function CompanyAppreciationPosts({ isCompact = false }) {
+  const [posts, setPosts] = useState(mockPosts);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]); // Empty array = All
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  
+  // Form state
+  const [formData, setFormData] = useState(initialFormState);
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.recognitionType) {
+      errors.recognitionType = 'Please select a recognition type';
+    }
+    if (!formData.company.trim()) {
+      errors.company = 'Company name is required';
+    }
+    if (!formData.honoree.trim()) {
+      errors.honoree = 'Honoree name is required';
+    }
+    if (!formData.alumniType) {
+      errors.alumniType = 'Please select alumni type';
+    }
+    if (!formData.currentRole.trim()) {
+      errors.currentRole = 'Current role is required';
+    }
+    if (!formData.hsiRole.trim()) {
+      errors.hsiRole = 'HSI role is required';
+    }
+    if (!formData.hsiTenureStart) {
+      errors.hsiTenureStart = 'Start year is required';
+    }
+    if (!formData.hsiTenureEnd) {
+      errors.hsiTenureEnd = 'End year is required';
+    }
+    if (formData.hsiTenureStart && formData.hsiTenureEnd && 
+        parseInt(formData.hsiTenureStart) > parseInt(formData.hsiTenureEnd)) {
+      errors.hsiTenureEnd = 'End year must be after start year';
+    }
+    if (!formData.title.trim()) {
+      errors.title = 'Title is required';
+    } else if (formData.title.trim().length < 10) {
+      errors.title = 'Title must be at least 10 characters';
+    }
+    if (!formData.content.trim()) {
+      errors.content = 'Description is required';
+    } else if (formData.content.trim().length < 50) {
+      errors.content = 'Description must be at least 50 characters';
+    }
+    if (formData.imageUrl && !isValidUrl(formData.imageUrl)) {
+      errors.imageUrl = 'Please enter a valid URL';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // URL validation helper
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    // Create new post
+    const newPost = {
+      id: Date.now(), // Simple unique ID
+      company: formData.company.trim(),
+      title: formData.title.trim(),
+      honoree: formData.honoree.trim(),
+      hsiRole: formData.hsiRole.trim(),
+      hsiTenure: `${formData.hsiTenureStart}-${formData.hsiTenureEnd}`,
+      currentRole: formData.currentRole.trim(),
+      alumniType: formData.alumniType,
+      content: formData.content.trim(),
+      recognitionType: formData.recognitionType,
+      postedDate: new Date().toISOString().split('T')[0],
+      image: formData.imageUrl.trim() || null,
+      featured: true, // New posts are automatically featured
+    };
+
+    // Add to posts (at the beginning)
+    setPosts((prev) => [newPost, ...prev]);
+
+    // Reset form and close modal
+    setFormData(initialFormState);
+    setFormErrors({});
+    setIsSubmitting(false);
+    setShowCreateModal(false);
+  };
+
+  // Reset form when modal closes
+  const handleCloseModal = () => {
+    setFormData(initialFormState);
+    setFormErrors({});
+    setShowCreateModal(false);
+  };
 
   // Toggle category selection
   const toggleCategory = (category) => {
@@ -194,7 +326,7 @@ function CompanyAppreciationPosts({ isCompact = false }) {
   };
 
 
-  const filteredPosts = mockPosts.filter((post) => {
+  const filteredPosts = posts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.honoree.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -205,7 +337,7 @@ function CompanyAppreciationPosts({ isCompact = false }) {
 
   // Compact view for overview
   if (isCompact) {
-    const featuredPosts = mockPosts.filter((p) => p.featured).slice(0, 3);
+    const featuredPosts = posts.filter((p) => p.featured).slice(0, 3);
 
     return (
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -360,9 +492,9 @@ function CompanyAppreciationPosts({ isCompact = false }) {
       </div>
 
       {/* Filter Modal */}
-      {showFilterDropdown && (
+      {showFilterDropdown && createPortal(
         <div 
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
           onClick={() => setShowFilterDropdown(false)}
         >
           <div
@@ -456,7 +588,8 @@ function CompanyAppreciationPosts({ isCompact = false }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Posts Grid */}
@@ -630,9 +763,15 @@ function CompanyAppreciationPosts({ isCompact = false }) {
       )}
 
       {/* View Post Modal */}
-      {selectedPost && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      {selectedPost && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+          >
             {/* Modal Image */}
             {selectedPost.image && (
               <div className="relative h-56">
@@ -780,110 +919,388 @@ function CompanyAppreciationPosts({ isCompact = false }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Create Post Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-[#DAB619] to-[#c4a015] px-6 py-4">
-              <h3 className="text-lg font-semibold text-white">Create Appreciation Post</h3>
-              <p className="text-white/80 text-sm mt-1">
-                Celebrate an alumni's achievement
-              </p>
+      {showCreateModal && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
+          onClick={handleCloseModal}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#DAB619] to-[#c4a015] px-6 py-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Create Appreciation Post</h3>
+                <p className="text-white/80 text-sm mt-0.5">
+                  Celebrate an alumni's achievement
+                </p>
+              </div>
+              <button 
+                onClick={handleCloseModal}
+                className="p-2 hover:bg-white/20 rounded-full transition-colors"
+              >
+                <X size={20} className="text-white" />
+              </button>
             </div>
 
-            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+            {/* Form Content */}
+            <div className="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
+              {/* Recognition Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Recognition Type <span className="text-red-500">*</span>
                 </label>
-                <select className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white">
+                <select 
+                  name="recognitionType"
+                  value={formData.recognitionType}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white ${
+                    formErrors.recognitionType ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                >
                   <option value="">Select recognition type</option>
                   {Object.keys(recognitionTypes).map((type) => (
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
+                {formErrors.recognitionType && (
+                  <p className="mt-1 text-xs text-red-500">{formErrors.recognitionType}</p>
+                )}
               </div>
 
+              {/* Two Column Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Company Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Company Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Google Philippines"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 ${
+                      formErrors.company ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {formErrors.company && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.company}</p>
+                  )}
+                </div>
+
+                {/* Alumni Honoree */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Alumni Honoree <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="honoree"
+                    value={formData.honoree}
+                    onChange={handleInputChange}
+                    placeholder="Full name of the honoree"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 ${
+                      formErrors.honoree ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {formErrors.honoree && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.honoree}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Alumni Type & Current Role */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Alumni Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Alumni Type <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex gap-3">
+                    <label 
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border rounded-lg cursor-pointer transition-all ${
+                        formData.alumniType === 'Employee' 
+                          ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="alumniType"
+                        value="Employee"
+                        checked={formData.alumniType === 'Employee'}
+                        onChange={handleInputChange}
+                        className="sr-only"
+                      />
+                      <Briefcase size={18} />
+                      <span className="text-sm font-medium">Employee</span>
+                    </label>
+                    <label 
+                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border rounded-lg cursor-pointer transition-all ${
+                        formData.alumniType === 'Intern' 
+                          ? 'border-[#9333EA] bg-[#9333EA]/5 text-[#9333EA]' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="alumniType"
+                        value="Intern"
+                        checked={formData.alumniType === 'Intern'}
+                        onChange={handleInputChange}
+                        className="sr-only"
+                      />
+                      <GraduationCap size={18} />
+                      <span className="text-sm font-medium">Intern</span>
+                    </label>
+                  </div>
+                  {formErrors.alumniType && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.alumniType}</p>
+                  )}
+                </div>
+
+                {/* Current Role */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Current Role <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="currentRole"
+                    value={formData.currentRole}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Senior Software Engineer"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 ${
+                      formErrors.currentRole ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {formErrors.currentRole && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.currentRole}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* HSI Info Section */}
+              <div className="p-4 bg-gray-50 rounded-xl space-y-4">
+                <p className="text-sm font-semibold text-gray-700">HSI Information</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* HSI Role */}
+                  <div className="md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-600 mb-1.5">
+                      HSI Role <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="hsiRole"
+                      value={formData.hsiRole}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Web Developer"
+                      className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white ${
+                        formErrors.hsiRole ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {formErrors.hsiRole && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.hsiRole}</p>
+                    )}
+                  </div>
+
+                  {/* HSI Tenure Start */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1.5">
+                      Start Year <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="hsiTenureStart"
+                      value={formData.hsiTenureStart}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white ${
+                        formErrors.hsiTenureStart ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 2026 - 2013 + 1 }, (_, i) => 2026 - i).map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                    {formErrors.hsiTenureStart && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.hsiTenureStart}</p>
+                    )}
+                  </div>
+
+                  {/* HSI Tenure End */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1.5">
+                      End Year <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="hsiTenureEnd"
+                      value={formData.hsiTenureEnd}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 bg-white ${
+                        formErrors.hsiTenureEnd ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 2026 - 2013 + 1 }, (_, i) => 2026 - i).map((year) => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                    {formErrors.hsiTenureEnd && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.hsiTenureEnd}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Company Name <span className="text-red-500">*</span>
+                  Post Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter company name"
-                  className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Promoted to Senior Software Engineer"
+                  className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 ${
+                    formErrors.title ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
+                <div className="flex justify-between mt-1">
+                  {formErrors.title ? (
+                    <p className="text-xs text-red-500">{formErrors.title}</p>
+                  ) : (
+                    <p className="text-xs text-gray-400">Minimum 10 characters</p>
+                  )}
+                  <p className={`text-xs ${formData.title.length < 10 ? 'text-gray-400' : 'text-green-600'}`}>
+                    {formData.title.length}/10+
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Alumni Honoree <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Search alumni..."
-                  className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., Promoted to Senior Engineer"
-                  className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40"
-                />
-              </div>
-
+              {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  name="content"
+                  value={formData.content}
+                  onChange={handleInputChange}
                   rows={4}
-                  placeholder="Share the details of this achievement..."
-                  className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 resize-none"
+                  placeholder="Share the details of this achievement... What makes this recognition special? What impact has this person made?"
+                  className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 resize-none ${
+                    formErrors.content ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Image <span className="text-gray-400">(Optional)</span>
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#DAB619] transition-colors cursor-pointer">
-                  <Image size={32} className="mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-500">Click to upload an image</p>
-                  <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                <div className="flex justify-between mt-1">
+                  {formErrors.content ? (
+                    <p className="text-xs text-red-500">{formErrors.content}</p>
+                  ) : (
+                    <p className="text-xs text-gray-400">Minimum 50 characters</p>
+                  )}
+                  <p className={`text-xs ${formData.content.length < 50 ? 'text-gray-400' : 'text-green-600'}`}>
+                    {formData.content.length}/50+
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="featured" className="rounded border-gray-300 text-[#DAB619] focus:ring-[#DAB619]" />
-                <label htmlFor="featured" className="text-sm text-gray-700">Mark as featured post</label>
+              {/* Image URL */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Image URL <span className="text-gray-400">(Optional)</span>
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="url"
+                      name="imageUrl"
+                      value={formData.imageUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://example.com/image.jpg"
+                      className={`w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#DAB619]/40 ${
+                        formErrors.imageUrl ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                    {formErrors.imageUrl && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.imageUrl}</p>
+                    )}
+                  </div>
+                </div>
+                {formData.imageUrl && isValidUrl(formData.imageUrl) && (
+                  <div className="mt-2 relative rounded-lg overflow-hidden h-32 bg-gray-100">
+                    <img 
+                      src={formData.imageUrl} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 hidden">
+                      <span className="text-sm">Failed to load image</span>
+                    </div>
+                  </div>
+                )}
+                <p className="mt-1.5 text-xs text-gray-400">
+                  Paste a direct link to an image (JPG, PNG, WebP)
+                </p>
+              </div>
+
+              {/* Auto-featured notice */}
+              <div className="flex items-center gap-2 p-3 bg-[#DAB619]/10 rounded-lg">
+                <Sparkle size={18} className="text-[#DAB619]" weight="fill" />
+                <p className="text-sm text-gray-700">
+                  New posts are automatically marked as <span className="font-semibold text-[#DAB619]">Featured</span>
+                </p>
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="px-5 py-2.5 text-sm font-medium text-white bg-[#DAB619] hover:bg-[#c4a015] rounded-lg transition-colors"
-              >
-                Publish Post
-              </button>
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                <span className="text-red-500">*</span> Required fields
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCloseModal}
+                  className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 text-sm font-medium text-white bg-[#DAB619] hover:bg-[#c4a015] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={18} />
+                      Publish Post
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
