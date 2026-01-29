@@ -1,5 +1,6 @@
 // src/components/achievements_recognition/BadgeShowcase.jsx
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Medal,
   MagnifyingGlass,
@@ -9,8 +10,11 @@ import {
   Crown,
   Rocket,
   Eye,
-  SortAscending,
-  SortDescending,
+  X,
+  EnvelopeSimple,
+  Briefcase,
+  Calendar,
+  User,
 } from '@phosphor-icons/react';
 
 // Badge configuration
@@ -71,28 +75,28 @@ const tierConfig = {
 
 // Mock data for badge holders
 const mockBadgeHolders = [
-  { id: 1, name: 'Maria Santos', email: 'maria.santos@email.com', alumniType: 'Former Employee', hsiRole: 'Web Developer', hsiTenure: '2018-2022', badges: ['certified', 'mentor', 'top_performer'], totalPoints: 850 },
-  { id: 2, name: 'John Dela Cruz', email: 'john.delacruz@email.com', alumniType: 'Former Employee', hsiRole: 'Project Manager', hsiTenure: '2015-2019', badges: ['certified', 'industry_leader', 'innovator'], totalPoints: 1200 },
-  { id: 3, name: 'Ana Reyes', email: 'ana.reyes@email.com', alumniType: 'Former Intern', hsiRole: 'QA / Web Dev', hsiTenure: '2019-2021', badges: ['certified', 'mentor'], totalPoints: 720 },
-  { id: 4, name: 'Carlos Garcia', email: 'carlos.garcia@email.com', alumniType: 'Former Employee', hsiRole: 'Game Developer', hsiTenure: '2019-2023', badges: ['certified', 'top_performer'], totalPoints: 450 },
-  { id: 5, name: 'Patricia Lim', email: 'patricia.lim@email.com', alumniType: 'Former Employee', hsiRole: 'HR', hsiTenure: '2016-2021', badges: ['certified', 'top_performer'], totalPoints: 980 },
-  { id: 6, name: 'Miguel Torres', email: 'miguel.torres@email.com', alumniType: 'Former Intern', hsiRole: 'GFX / Game Dev', hsiTenure: '2020-2021', badges: ['certified', 'mentor'], totalPoints: 670 },
-  { id: 7, name: 'Sofia Chen', email: 'sofia.chen@email.com', alumniType: 'Former Employee', hsiRole: 'Unleash Web Dev', hsiTenure: '2017-2022', badges: ['certified', 'innovator', 'industry_leader'], totalPoints: 1100 },
-  { id: 8, name: 'David Kim', email: 'david.kim@email.com', alumniType: 'Former Intern', hsiRole: 'Sys Admin / QA', hsiTenure: '2021-2022', badges: ['certified', 'top_performer'], totalPoints: 580 },
+  { id: 1, name: 'Maria Santos', email: 'maria.santos@email.com', alumniType: 'Former Employee', hsiRole: 'Web Developer', hsiTenure: '2018-2022', badges: ['certified', 'mentor', 'top_performer'] },
+  { id: 2, name: 'John Dela Cruz', email: 'john.delacruz@email.com', alumniType: 'Former Employee', hsiRole: 'Project Manager', hsiTenure: '2015-2019', badges: ['certified', 'industry_leader', 'innovator'] },
+  { id: 3, name: 'Ana Reyes', email: 'ana.reyes@email.com', alumniType: 'Former Intern', hsiRole: 'QA / Web Dev', hsiTenure: '2019-2021', badges: ['certified', 'mentor'] },
+  { id: 4, name: 'Carlos Garcia', email: 'carlos.garcia@email.com', alumniType: 'Former Employee', hsiRole: 'Game Developer', hsiTenure: '2019-2023', badges: ['certified', 'top_performer'] },
+  { id: 5, name: 'Patricia Lim', email: 'patricia.lim@email.com', alumniType: 'Former Employee', hsiRole: 'HR', hsiTenure: '2016-2021', badges: ['certified', 'top_performer'] },
+  { id: 6, name: 'Miguel Torres', email: 'miguel.torres@email.com', alumniType: 'Former Intern', hsiRole: 'GFX / Game Dev', hsiTenure: '2020-2021', badges: ['certified', 'mentor'] },
+  { id: 7, name: 'Sofia Chen', email: 'sofia.chen@email.com', alumniType: 'Former Employee', hsiRole: 'Unleash Web Dev', hsiTenure: '2017-2022', badges: ['certified', 'innovator', 'industry_leader'] },
+  { id: 8, name: 'David Kim', email: 'david.kim@email.com', alumniType: 'Former Intern', hsiRole: 'Sys Admin / QA', hsiTenure: '2021-2022', badges: ['certified', 'top_performer'] },
 ];
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 function BadgeShowcase() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBadge, setSelectedBadge] = useState('');
   const [selectedTier, setSelectedTier] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [showBadgeDetail, setShowBadgeDetail] = useState(null);
+  const [selectedHolder, setSelectedHolder] = useState(null);
 
-  // Filter and sort badge holders
+  // Filter badge holders
   const filteredHolders = mockBadgeHolders
     .filter((holder) => {
       const matchesSearch =
@@ -104,9 +108,7 @@ function BadgeShowcase() {
         holder.badges.some((b) => badgeConfig[b]?.tier === selectedTier);
       return matchesSearch && matchesBadge && matchesTier;
     })
-    .sort((a, b) =>
-      sortOrder === 'desc' ? b.totalPoints - a.totalPoints : a.totalPoints - b.totalPoints
-    );
+    .sort((a, b) => b.badges.length - a.badges.length); // Sort by number of badges
 
   const totalPages = Math.ceil(filteredHolders.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -158,48 +160,43 @@ function BadgeShowcase() {
                 <option key={key} value={key}>{config.name}</option>
               ))}
             </select>
-
-            {/* Sort Button */}
-            <button
-              onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm border border-[#AAA9A9] rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              {sortOrder === 'desc' ? <SortDescending size={18} /> : <SortAscending size={18} />}
-              Points
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Badge Types Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        {badgeStats.map((badge) => {
-          const Icon = badge.icon;
-          const isSelected = selectedBadge === badge.type;
-          return (
-            <button
-              key={badge.type}
-              onClick={() => setSelectedBadge(isSelected ? '' : badge.type)}
-              className={`p-4 rounded-xl text-center transition-all ${
-                isSelected
-                  ? 'ring-2 ring-[#DAB619] shadow-lg scale-105'
-                  : 'bg-white hover:shadow-md'
-              }`}
-              style={{ backgroundColor: isSelected ? badge.bgColor : undefined }}
-            >
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2"
-                style={{ backgroundColor: badge.bgColor }}
+      {/* Badge Types - Horizontal Cards */}
+      <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="flex flex-wrap gap-3">
+          {badgeStats.map((badge) => {
+            const Icon = badge.icon;
+            const isSelected = selectedBadge === badge.type;
+            return (
+              <button
+                key={badge.type}
+                onClick={() => setSelectedBadge(isSelected ? '' : badge.type)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all flex-1 min-w-[180px] ${
+                  isSelected
+                    ? 'ring-2 ring-[#DAB619] shadow-md'
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }`}
+                style={{ backgroundColor: isSelected ? badge.bgColor : undefined }}
               >
-                <Icon size={24} style={{ color: badge.color }} weight="duotone" />
-              </div>
-              <p className="text-xs font-medium text-gray-900 truncate">{badge.name}</p>
-              <p className="text-lg font-bold mt-1" style={{ color: badge.color }}>
-                {badge.count}
-              </p>
-            </button>
-          );
-        })}
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: isSelected ? 'white' : badge.bgColor }}
+                >
+                  <Icon size={22} style={{ color: badge.color }} weight="duotone" />
+                </div>
+                <div className="text-left flex-1">
+                  <p className="text-sm font-medium text-gray-900">{badge.name}</p>
+                  <p className="text-lg font-bold" style={{ color: badge.color }}>
+                    {badge.count} <span className="text-xs font-normal text-gray-500">holders</span>
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Badge Holders Grid */}
@@ -233,58 +230,60 @@ function BadgeShowcase() {
         </div>
 
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {currentHolders.map((holder) => (
               <div
                 key={holder.id}
-                className="p-5 border border-gray-100 rounded-xl hover:shadow-lg transition-all group"
+                className="p-4 border border-gray-100 rounded-xl hover:shadow-lg hover:border-[#DAB619]/30 transition-all group"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#DAB619] to-[#c4a015] flex items-center justify-center text-white font-bold text-lg">
-                      {holder.name.split(' ').map((n) => n[0]).join('')}
-                    </div>
-                    <div>
-                    <h4 className="font-semibold text-gray-900">{holder.name}</h4>
-                    <p className="text-sm text-gray-500">{holder.hsiRole} ({holder.hsiTenure})</p>
-                    </div>
+                {/* Header with Avatar and Badge Count */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#DAB619] to-[#c4a015] flex items-center justify-center text-white font-bold">
+                    {holder.name.split(' ').map((n) => n[0]).join('')}
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Points</p>
-                    <p className="text-lg font-bold text-[#DAB619]">{holder.totalPoints}</p>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 group-hover:text-[#DAB619] transition-colors">{holder.name}</h4>
+                    <p className="text-xs text-gray-500">{holder.alumniType}</p>
                   </div>
                 </div>
 
+                {/* Role Info */}
+                <div className="mb-3 p-2.5 bg-gray-50 rounded-lg">
+                  <p className="text-xs font-medium text-gray-700">{holder.hsiRole}</p>
+                  <p className="text-[10px] text-gray-400">{holder.hsiTenure}</p>
+                </div>
+
                 {/* Badges */}
-                <div className="flex flex-wrap gap-2 mt-4">
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {holder.badges.map((badgeType, idx) => {
                     const config = badgeConfig[badgeType];
                     const Icon = config?.icon || Medal;
                     return (
                       <div
                         key={idx}
-                        className="group/badge relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border cursor-pointer hover:shadow-sm transition-all"
+                        className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium cursor-pointer hover:shadow-sm transition-all"
                         style={{
                           color: config?.color || '#6B7280',
-                          borderColor: config?.color || '#6B7280',
                           backgroundColor: config?.bgColor || '#F3F4F6',
                         }}
                         onClick={() => setShowBadgeDetail(badgeType)}
+                        title={config?.name}
                       >
-                        <Icon size={12} weight="duotone" />
+                        <Icon size={10} weight="duotone" />
                         {config?.name || badgeType}
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-                  <button className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-gray-600 hover:text-[#DAB619] hover:bg-[#DAB619]/5 rounded-lg transition-colors">
-                    <Eye size={16} />
-                    View Profile
-                  </button>
-                </div>
+                {/* Action */}
+                <button 
+                  onClick={() => setSelectedHolder(holder)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs text-gray-500 hover:text-[#DAB619] hover:bg-[#DAB619]/5 rounded-lg transition-colors border border-gray-100"
+                >
+                  <Eye size={14} />
+                  View Profile
+                </button>
               </div>
             ))}
           </div>
@@ -293,7 +292,7 @@ function BadgeShowcase() {
             {currentHolders.map((holder) => (
               <div
                 key={holder.id}
-                className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-md transition-all"
+                className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-md hover:border-[#DAB619]/30 transition-all"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#DAB619] to-[#c4a015] flex items-center justify-center text-white font-bold">
@@ -301,39 +300,38 @@ function BadgeShowcase() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">{holder.name}</h4>
-                    <p className="text-sm text-gray-500">{holder.hsiRole} ({holder.hsiTenure})</p>
+                    <p className="text-xs text-gray-500">{holder.alumniType}</p>
+                    <p className="text-xs text-gray-400">{holder.hsiRole} ({holder.hsiTenure})</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-wrap gap-1.5 max-w-xs">
-                    {holder.badges.slice(0, 4).map((badgeType, idx) => {
+                  <div className="flex flex-wrap gap-1.5 max-w-md">
+                    {holder.badges.map((badgeType, idx) => {
                       const config = badgeConfig[badgeType];
                       const Icon = config?.icon || Medal;
                       return (
                         <div
                           key={idx}
-                          className="w-8 h-8 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: config?.bgColor || '#F3F4F6' }}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer hover:shadow-sm transition-all"
+                          style={{ 
+                            backgroundColor: config?.bgColor || '#F3F4F6',
+                            color: config?.color || '#6B7280',
+                          }}
                           title={config?.name}
+                          onClick={() => setShowBadgeDetail(badgeType)}
                         >
-                          <Icon size={16} style={{ color: config?.color }} weight="duotone" />
+                          <Icon size={14} style={{ color: config?.color }} weight="duotone" />
+                          {config?.name}
                         </div>
                       );
                     })}
-                    {holder.badges.length > 4 && (
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-600">
-                        +{holder.badges.length - 4}
-                      </div>
-                    )}
                   </div>
 
-                  <div className="text-right min-w-[80px]">
-                    <p className="text-lg font-bold text-[#DAB619]">{holder.totalPoints}</p>
-                    <p className="text-xs text-gray-500">points</p>
-                  </div>
-
-                  <button className="p-2 text-gray-500 hover:text-[#DAB619] hover:bg-[#DAB619]/5 rounded-lg transition-colors">
+                  <button 
+                    onClick={() => setSelectedHolder(holder)}
+                    className="p-2 text-gray-500 hover:text-[#DAB619] hover:bg-[#DAB619]/5 rounded-lg transition-colors"
+                  >
                     <Eye size={20} />
                   </button>
                 </div>
@@ -376,10 +374,140 @@ function BadgeShowcase() {
         )}
       </div>
 
+      {/* Profile Modal */}
+      {selectedHolder && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
+          onClick={() => setSelectedHolder(null)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+          >
+            {/* Header with gradient */}
+            <div className="relative bg-gradient-to-r from-[#DAB619] to-[#c4a015] px-6 py-8">
+              <button 
+                onClick={() => setSelectedHolder(null)}
+                className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+              >
+                <X size={20} className="text-white" />
+              </button>
+              
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-[#DAB619] shadow-lg">
+                  {selectedHolder.name.split(' ').map((n) => n[0]).join('')}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">{selectedHolder.name}</h3>
+                  <p className="text-white/80 text-sm">{selectedHolder.alumniType}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-5">
+              {/* Contact Info */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 rounded-lg bg-[#DAB619]/10 flex items-center justify-center">
+                  <EnvelopeSimple size={20} className="text-[#DAB619]" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Email</p>
+                  <p className="text-sm font-medium text-gray-900">{selectedHolder.email}</p>
+                </div>
+              </div>
+
+              {/* HSI Info */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Briefcase size={20} className="text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">HSI Role</p>
+                    <p className="text-sm font-medium text-gray-900">{selectedHolder.hsiRole}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <Calendar size={20} className="text-purple-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Tenure</p>
+                    <p className="text-sm font-medium text-gray-900">{selectedHolder.hsiTenure}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Badges Section */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <Medal size={16} className="text-[#DAB619]" />
+                  Earned Badges ({selectedHolder.badges.length})
+                </h4>
+                <div className="space-y-2">
+                  {selectedHolder.badges.map((badgeType, idx) => {
+                    const config = badgeConfig[badgeType];
+                    const Icon = config?.icon || Medal;
+                    const tier = tierConfig[config?.tier];
+                    return (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:shadow-sm transition-all cursor-pointer"
+                        onClick={() => {
+                          setSelectedHolder(null);
+                          setShowBadgeDetail(badgeType);
+                        }}
+                      >
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: config?.bgColor }}
+                        >
+                          <Icon size={24} style={{ color: config?.color }} weight="duotone" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold text-gray-900">{config?.name}</p>
+                            <span
+                              className="px-1.5 py-0.5 rounded text-[10px] font-medium"
+                              style={{ backgroundColor: tier?.bgColor, color: tier?.color }}
+                            >
+                              {tier?.label}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500">{config?.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+              <button
+                onClick={() => setSelectedHolder(null)}
+                className="w-full py-2.5 text-sm font-medium text-white bg-[#DAB619] hover:bg-[#c4a015] rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
       {/* Badge Detail Modal */}
-      {showBadgeDetail && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+      {showBadgeDetail && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
+          onClick={() => setShowBadgeDetail(null)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+          >
             <div
               className="p-6"
               style={{ backgroundColor: badgeConfig[showBadgeDetail]?.bgColor }}
@@ -445,7 +573,8 @@ function BadgeShowcase() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
