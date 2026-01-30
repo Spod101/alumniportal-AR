@@ -1,49 +1,61 @@
-// src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import AlumniManagement from './pages/AlumniManagement';
-import ContentManagement from './pages/ContentManagement';
-import AnalyticsAndReport from './pages/AnalyticsAndReport';
-import AchievementsAndRecognition from './pages/AchievementsAndRecognition';
-import CreateJobPost from './components/content_management/CreateJobPost';
-import ManageJobPost from './components/content_management/ManageJobPost';
-import EditJobPost from './components/content_management/EditJobPost';
-import CreateEvents from './components/content_management/CreateEvents';
-import ManageEvents from './components/content_management/ManageEvents';
-import EditEvents from './components/content_management/EditEvents';
+import React from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import MainLayout from './layouts/MainLayout'
+import DashboardPage from './pages/DashboardPage'
+import DirectoryPage from './pages/DirectoryPage'
+import CareerPage from './pages/CareerPage'
+import TrainingPage from './pages/TrainingPage'
+import AchievementsPage from './pages/AchievementsPage'
+import EventsPage from './pages/EventsPage'
+import AnnouncementsPage from './pages/AnnouncementsPage'
+import CompanyNewsPage from './pages/announcements/CompanyNewsPage'
+import PolicyChangesPage from './pages/announcements/PolicyChangesPage'
+import PartnershipsPage from './pages/announcements/PartnershipsPage'
+import AlumniStoriesPage from './pages/announcements/AlumniStoriesPage'
+import MentorshipPage from './pages/MentorshipPage'
+import DocumentsPage from './pages/DocumentsPage'
+import ProfilePage from './pages/ProfilePage'
+
+import FeedbackSurveysPage from './pages/FeedbackSurvey/FeedbackSurveysPage' // Feedback&SurveyPage
+import AlumniFeedback from './pages/FeedbackSurvey/AlumniFeedbackPage'
+import ProgramEvaluation from './pages/FeedbackSurvey/ProgramEvaluationPage'
+import SuggestionsImprovement from './pages/FeedbackSurvey/SuggestionsImprovementPage'
+import ProgramEvaluationSection2 from './pages/FeedbackSurvey/ProgramEvaluationSection2'
+import ProgramEvaluationSection3 from './pages/FeedbackSurvey/ProgramEvaluationSection3'
 
 
 
-
-// ... Placeholder componentz
-
-function App() {
+export default function App() {
   return (
-    <Router>
+    <MainLayout>
       <Routes>
-        <Route path="/" element={<Layout><AlumniManagement /></Layout>} />
-        <Route path="/alumni-management" element={<Layout><AlumniManagement /></Layout>} />
-        <Route path="/content-management" element={<Layout><ContentManagement /></Layout>} />
-        <Route path="/content-management/create-job-post" element={<Layout><CreateJobPost /></Layout>} />
-        <Route path="/content-management/create-events" element={<Layout><CreateEvents/></Layout>} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/directory" element={<DirectoryPage />} />
+        <Route path="/career" element={<CareerPage />} />
+        <Route path="/training" element={<TrainingPage />} />
+        <Route path="/achievements" element={<AchievementsPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/announcements" element={<AnnouncementsPage />} />
+        <Route path="/announcements/company-news" element={<CompanyNewsPage />} />
+        <Route path="/announcements/policy-changes" element={<PolicyChangesPage />} />
+        <Route path="/announcements/partnerships" element={<PartnershipsPage />} />
+        <Route path="/announcements/alumni-stories" element={<AlumniStoriesPage />} />
+        <Route path="/mentorship" element={<MentorshipPage />} />
+        <Route path="/documents" element={<DocumentsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
-        <Route path="/content-management/manage-job-post" element={<Layout><ManageJobPost /></Layout>} />
-        <Route path="/content-management/edit-job-post" element={<Layout><EditJobPost/></Layout>} />
+        <Route path="/" element={<Navigate to="/directory" replace />} />
+        <Route path="*" element={<Navigate to="/directory" replace />} />
 
-        <Route path="/content-management/manage-events" element={<Layout><ManageEvents/></Layout>} />
-        <Route path="/content-management/edit-events" element={<Layout><EditEvents/></Layout>} />
+        <Route path="/feedback-surveys" element={<FeedbackSurveysPage />} /> 
 
+        <Route path="/feedback-surveys/alumni-feedback" element={<AlumniFeedback />}/>
+        <Route path="/feedback-surveys/program-evaluation" element={<ProgramEvaluation />}/>
+        <Route path="/feedback-surveys/suggestions-improvement" element={<SuggestionsImprovement />}/>
+        <Route path="/feedback-surveys/program-evaluation/section-2" element={<ProgramEvaluationSection2 />}/>
+        <Route path="/feedback-surveys/program-evaluation/section-3" element={<ProgramEvaluationSection3 />}/>
 
-
-
-
-        <Route path="/analytics-and-report" element={<Layout><AnalyticsAndReport /></Layout>} />
-        <Route path="/achievements" element={<Layout><AchievementsAndRecognition /></Layout>} />
-
-        {/* Add other routes similarly */}
       </Routes>
-    </Router>
-  );
+    </MainLayout>
+  )
 }
-
-export default App;
